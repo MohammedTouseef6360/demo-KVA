@@ -4,6 +4,10 @@
 
 Built for the merchant who never learned typing — **if you can talk, you can keep khata.**
 
+> **🔗 Live demo (HTTPS):** https://demo-kva.vercel.app
+> **🎬 Demo video:** [`demo.mp4`](./demo.mp4)
+> **📦 Repo:** https://github.com/MohammedTouseef6360/demo-KVA
+
 ---
 
 ## ⚡ Run in 10 seconds
