@@ -96,11 +96,24 @@ Phone (PWA, offline-first)          Node backend (crash-guarded)
 - **Why rules-based NLU fallback?** Latency <100ms (spec allows 1.5s), zero cost at scale, works fully offline, deterministic enough for money. LLM path is pluggable via `handleUtterance`/`parseAsync`.
 - **Why localStorage not SQLite?** Hackathon-scope single-device truth; sync protocol already merges by id, swap to IndexedDB/SQLite is additive.
 
+### Gnani API Platform services used
+
+| Service | Model | Where | What it does |
+|---|---|---|---|
+| **STT** | Prisma v3.0 | `server /api/gnani/stt` ← `js/speech.js` | 16 kHz mono WAV from the mic → Hinglish/Hindi transcript (`hi-IN`, auto language detect) |
+| **TTS** | Timbre v3.0 | `server /api/gnani/tts` ← `js/speech.js` | Speaks the confirmation back (`Shivani`, speed 0.9, 24 kHz WAV) |
+| **LLM** | Evon v3.3 (OpenAI-compatible) | `server /api/gnani/llm` ← `js/parser.js` | Intent + item + money-role extraction from the transcript, JSON mode |
+
+Every call goes **browser → our Node proxy → Gnani**. The key lives only in `process.env.GNANI_API_KEY`, never in the bundle.
+Fallback ladder: Gnani → browser `SpeechRecognition`/`speechSynthesis` → deterministic Hinglish rules, so a demo never dies on a network blip.
+
+> **Streaming note (honest):** this build uses the Prisma **REST** endpoint (`POST /stt/v3`) per utterance, not `wss://api.vachana.ai/stt/v3/stream`. The WebSocket streaming path is the next step and is scoped in `submission.md`.
+
 ## 📋 Quick Start (local)
 ```bash
 npm start          # → http://localhost:3000
 ```
-No dependencies. No build step. Node ≥16. Opens on phone via LAN IP too (`http://192.168.x.x:3000`) — but the mic needs HTTPS (use localhost or deploy).
+No dependencies. No build step. Node ≥18. Opens on phone via LAN IP too (`http://192.168.x.x:3000`) — but the mic needs HTTPS (use localhost or the live deploy: https://demo-kva.vercel.app).
 
 **Optional — enable Gnani Voice AI:** create a `.env` file:
 ```

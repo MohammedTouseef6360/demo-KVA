@@ -710,5 +710,5 @@ document.addEventListener("keydown",e=>{
     try{Scan.stop()}catch(err){}
   }
 });
-pinGate(()=>toast("Namaste ji 🙏 Kirana AI ready hai"));
+pinGate(()=>toast("Namaste ji 🙏 BolKhata ready hai"));
 })(window);
