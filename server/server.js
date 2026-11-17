@@ -60,12 +60,27 @@
     res.writeHead(code,{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store","Access-Control-Allow-Origin":"*"});
     res.end(body);
   }
+  // On Vercel the Node runtime may pre-parse the body (req.body) and consume the
+  // stream, so waiting for "end" would hang. Handle every shape we can meet.
+  function parseJsonish(v){
+    if(v===undefined || v===null) return null;
+    if(Buffer.isBuffer(v)) v=v.toString("utf8");
+    if(typeof v==="string"){ try{ return JSON.parse(v||"{}"); }catch(e){ return {__badjson:true}; } }
+    if(typeof v==="object") return v;
+    return {__badjson:true};
+  }
   function readBody(req){
+    if(req.body!==undefined && req.body!==null) return Promise.resolve(parseJsonish(req.body));
+    if(req.readableEnded) return Promise.resolve({});
     return new Promise(resolve=>{
-      let data="", size=0;
-      req.on("data",c=>{ size+=c.length; if(size>2_000_000){ resolve(null); try{req.destroy()}catch(e){} } else data+=c; });
-      req.on("end",()=>{ if(data.length>2_000_000) return resolve(null); try{ resolve(JSON.parse(data||"{}")); }catch(e){ resolve({__badjson:true}); } });
-      req.on("error",()=>resolve(null));
+      let data="", size=0, done=false, timer=null;
+      const finish=v=>{ if(!done){ done=true; if(timer) clearTimeout(timer); resolve(v); } };
+      req.on("data",c=>{ size+=c.length; if(size>2_000_000){ finish(null); try{req.destroy()}catch(e){} } else data+=c; });
+      req.on("end",()=>{ if(data.length>2_000_000) return finish(null); finish(parseJsonish(data||"{}")); });
+      req.on("error",()=>finish(null));
+      req.on("close",()=>finish(parseJsonish(data)));
+      timer=setTimeout(()=>finish(data? parseJsonish(data):{}), 15000);
+      if(timer.unref) timer.unref();
     });
   }
 
