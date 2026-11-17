@@ -73,6 +73,7 @@
     while((m=re.exec(t))){
       const amt=+m[1], idx=m.index, after=t.slice(m.index+m[0].length,m.index+m[0].length+16);
       const before=t.slice(Math.max(0,m.index-12),m.index);
+      const dIdx=idx+m[0].length-m[1].length;
       let role="total";
       if(/^\s*(per|prati)\b/i.test(after)) role="rate";
       else if(/^\s*(cash|naqd|nakad)/i.test(after)) role="cash";
@@ -81,8 +82,20 @@
       else if(/\b(cash|naqd|nakad)\s*$/i.test(before)) role="cash";
       else if(/\b(upi|online|gpay|phonepe|paytm)\s*$/i.test(before)) role="upi";
       else if(/\b(udhaar|udhar|udari)\s*$/i.test(before)) role="udhaar";
-      out.push({amt,idx,role});
+      out.push({amt,idx,dIdx,role});
     }
+    // Same money roles without the "rs"/"₹" prefix — "100 cash 50 udhaar".
+    // Shopkeepers say this constantly; without it the numbers leak into item qty.
+    const re2=/(\d+(?:\.\d+)?)\s*(cash|naqd|nakad|upi|online|gpay|phonepe|paytm|udhaar|udhar|udari)\b/gi;
+    while((m=re2.exec(t))){
+      const dIdx=m.index;
+      if(out.some(x=>x.dIdx===dIdx)) continue;
+      const w=m[2].toLowerCase();
+      const role=/^(upi|online|gpay|phonepe|paytm)$/.test(w)?"upi"
+        :/^(udhaar|udhar|udari)$/.test(w)?"udhaar":"cash";
+      out.push({amt:+m[1],idx:dIdx,dIdx,role});
+    }
+    out.sort((a,b)=>a.idx-b.idx);
     return out;
   }
 
