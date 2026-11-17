@@ -91,6 +91,22 @@ Phone (PWA, offline-first)          Node backend (crash-guarded)
 - **Why rules-based NLU fallback?** Latency <100ms (spec allows 1.5s), zero cost at scale, works fully offline, deterministic enough for money. LLM path is pluggable via `handleUtterance`/`parseAsync`.
 - **Why localStorage not SQLite?** Hackathon-scope single-device truth; sync protocol already merges by id, swap to IndexedDB/SQLite is additive.
 
+## 📋 Quick Start (local)
+```bash
+npm start          # → http://localhost:3000
+```
+No dependencies. No build step. Node ≥16. Opens on phone via LAN IP too (`http://192.168.x.x:3000`) — but the mic needs HTTPS (use localhost or deploy).
+
+**Optional — enable Gnani Voice AI:** create a `.env` file:
+```
+GNANI_API_KEY=your_key_from_app.gnani.ai
+GEMINI_API_KEY=your_gemini_key   # optional, for Evon LLM
+```
+Without keys the app runs in fallback mode (browser speech + rule-based NLU).
+
+## 🎬 Demo in 10 seconds
+Settings → "Demo Data" auto-runs the full tour: sale → collection → expense → inward → udhaar → Z-report → stock → home.
+
 ## 🚀 Deploy (Vercel)
 1. Push to GitHub.
 2. Import the repo on Vercel (it auto-detects `vercel.json`).
