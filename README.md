@@ -87,7 +87,8 @@ Phone (PWA, offline-first)          Node backend (crash-guarded)
 └─────────────────────────┘         └──────────────────────┘
 ```
 
-- **Gnani Voice AI (BolBharat challenge):** STT via Gnani Prisma v3.0 (hi-IN, auto language detect), TTS via Gnani Timbre v2.5 (Hindi voice `Nalini`), reasoning via Gnani Evon v3.3 (Gemini stand-in until a hosted Evon endpoint is available). All calls proxied through `/api/gnani/*` so the API key never ships to the browser. Rule-based NLU remains as an offline fallback. See `.env.example`.
+- **Gnani Voice AI (BolBharat challenge):** STT via Gnani Prisma v3.0 (hi-IN, auto language detect), TTS via Gnani Timbre v3.0 (voice `Shivani`, speed 0.9), reasoning via Gnani Evon v3.3 (Gemini stand-in until a hosted Evon endpoint is available). All calls proxied through `/api/gnani/*` so the API key never ships to the browser. Rule-based NLU remains as an offline fallback. See `.env.example`.
+- **New features:** Credit (udhaar) entries by voice, UPI+cash split tender, supplier payments ledger, daily cash-close/shift handover, voice price correction ("nahi, ₹60 per kilo"), relative dates ("kal"/"parso"), customer-name disambiguation, AI disclosure on first turn, multi-language TTS voice selector.
 - **Why rules-based NLU fallback?** Latency <100ms (spec allows 1.5s), zero cost at scale, works fully offline, deterministic enough for money. LLM path is pluggable via `handleUtterance`/`parseAsync`.
 - **Why localStorage not SQLite?** Hackathon-scope single-device truth; sync protocol already merges by id, swap to IndexedDB/SQLite is additive.
 
