@@ -1,0 +1,36 @@
+:root{
+  --bg:#f8f9ff;
+  --surface:#f8f9ff;
+  --card:#ffffff;
+  --sc-low:#eff4ff;
+  --sc:#e6eeff;
+  --sc-high:#dee9fc;
+  --sc-highest:#d9e3f6;
+  --ink:#121c2a;
+  --ink2:#3f4943;
+  --muted:#5c6672;
+  --outline:#bec9c1;
+  --outline-soft:#dfe6ef;
+  --primary:#004e34;
+  --pc:#006847;
+  --on-pc:#90e4ba;
+  --p-fixed:#9ff4c9;
+  --p-fixed-dim:#84d7ae;
+  --secondary:#4648d4;
+  --sec-c:#6063ee;
+  --tertiary:#805000;
+  --t-fixed:#ffb95f;
+  --t-fixed-bg:#ffddb8;
+  --error:#ba1a1a;
+  --err-bg:#ffdad6;
+  --err-ink:#93000a;
+  --upi-bg:#E8F5E9;--upi-ink:#2E7D32;
+  --sh-sm:0 1px 2px rgba(18,28,42,.06);
+  --sh-card:0 4px 12px rgba(0,0,0,.05);
+  --sh-pop:0 12px 40px rgba(18,28,42,.20);
+  --fd:"Plus Jakarta Sans",system-ui,sans-serif;
+  --fb:"Inter",system-ui,sans-serif;
+  --r-lg:.5rem;--r-xl:.75rem;--r-2xl:1rem;--r-full:9999px;
+  --maxw:480px;--navh:76px;
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}

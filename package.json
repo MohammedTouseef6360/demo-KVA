@@ -1,0 +1,17 @@
+{
+  "name": "bolkhata-ai",
+  "version": "3.0.0",
+  "description": "Voice-first kirana khata — bolo aur khata likho. Hinglish NLU, split-tender, udhaar reminders, barcode, Z-reports, offline-first + crash-guarded Node backend.",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@reticlehq/react": "^2.13.1"
+  }
+}

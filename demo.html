@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>BolKhata — Demo Recording Guide</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#0b1220;color:#fff;padding:40px;max-width:720px;margin:0 auto;line-height:1.6}
+h1{color:#006847;margin-bottom:8px}
+h2{color:#90e4ba;margin-top:24px;margin-bottom:6px;font-size:16px}
+a{color:#90e4ba}
+li{margin:4px 0}
+code{background:#1f2a44;padding:2px 6px;border-radius:4px;font-size:13px}
+</style>
+</head>
+<body>
+<h1>BolKhata — Demo Recording Guide</h1>
+<p>Record the <strong>real app</strong>, not a mock. Open <a href="http://localhost:3000">http://localhost:3000</a> (or your HTTPS deploy) in Chrome full-screen.</p>
+<h2>Quick start</h2>
+<ol>
+  <li>Clear site data (DevTools → Application) → Reload.</li>
+  <li>Settings → turn Voice feedback ON, Cloud sync OFF.</li>
+  <li>Settings → <strong>Demo Data</strong> — auto-runs the full tour (sales → collection → expense → inward → udhaar → Z-report → stock → home).</li>
+  <li>Screen-record with Win+G / OBS while it runs (~10s).</li>
+  <li>Then manually: voice overlay → demo chip → Confirm Sale → Udhaar → Remind → Reports → Scan Barcode.</li>
+</ol>
+<h2>Full timed script</h2>
+<p>See <code>demo-script.md</code> in the project root for the 90-second beat-by-beat script with voiceover lines.</p>
+<h2>Mic troubleshooting</h2>
+<ul>
+  <li>Mic works on <strong>localhost</strong> or <strong>HTTPS</strong> only.</li>
+  <li>On a phone over LAN (http://192.168.x.x) the browser blocks the mic — use ngrok or the deployed HTTPS URL.</li>
+  <li>If the mic fails, demo chips still run the full flow.</li>
+</ul>
+</body>
+</html>
