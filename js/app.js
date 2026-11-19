@@ -136,6 +136,7 @@ $("#histSearch")?.addEventListener("input",e=>{histQ=e.target.value;renderHistor
 /* ---------- voice view ---------- */
 function openVoice(){ $("#voiceView").hidden=false; document.body.style.overflow="hidden"; }
 function closeVoice(){ $("#voiceView").hidden=true; document.body.style.overflow=""; try{Voice.cancelListen&&Voice.cancelListen()}catch(e){}; stopMicUI(); }
+function closeSoon(){ if(!bill) closeVoice(); }
 $("#fabMic").addEventListener("click",()=>openVoice());
 $$("[data-close-voice]").forEach(b=>b.addEventListener("click",closeVoice));
 
@@ -208,9 +209,11 @@ function routeIntent(p,latency){
       break;}
     case "correction": {
       if(bill&&p.patch){
+        const itemName=p.patch.itemName||(bill.items[p.patch.index]&&bill.items[p.patch.index].name)||"Item";
         Store.applyCorrection(p.patch,bill); renderBill();
-        toast(`Sahi kar diya — ${p.itemName}`);
-        Voice.speak(`${p.itemName} ${bill.items[p.patch.index].qty} kar diya`);
+        toast(`Sahi kar diya — ${itemName}`);
+        const q=(bill.items[p.patch.index]&&bill.items[p.patch.index].qty);
+        Voice.speak(q?`${itemName} ${q} kar diya`:`${itemName} update ho gaya`);
         $("#micStatus").textContent="BILL UPDATE HO GAYA ✓";
       } else toast("Pehle bill to banao!","warn");
       break;}
@@ -220,9 +223,10 @@ function routeIntent(p,latency){
       let cname=p.name;
       if(matches.length>1){ const pick=prompt("Kaunsa "+p.name+"? "+matches.map((m,i)=>(i+1)+") "+m.name).join("  "),"1"); const idx=parseInt(pick,10)-1; if(idx>=0&&idx<matches.length) cname=matches[idx].name; }
       const c=Store.ensureCustomer(cname);
-      Store.applyCollection(c.name,p.amount,p.when||0); scheduleSync(); renderStats();
+      Store.applyCollection(c.name,p.amount,p.when||0); scheduleSync(); renderStats(); renderKhata();
       toast(`₹${inr(p.amount)} jama — ${c.name}. Baaki ₹${inr(c.due)}`);
       Voice.speak(`${p.amount} rupaye jama ho gaye. Ab ${inr(c.due)} baaki`);
+      setTimeout(closeSoon,1100);
       break;}
     case "credit":{
       if(!p.name||!p.amount){toast("Kaun aur kitna credit? Phir bolo","warn");break;}
@@ -233,21 +237,25 @@ function routeIntent(p,latency){
       Store.applyCredit(cc.name,p.amount,p.note,p.when||0); scheduleSync(); renderStats(); renderKhata();
       toast(`Rs ${inr(p.amount)} credit added - ${cc.name}. Baaki Rs ${inr(cc.due)}`);
       Voice.speak(`${p.amount} rupaye credit add ho gaye. Ab ${inr(cc.due)} baaki`);
+      setTimeout(closeSoon,1100);
       break;}
     case "query": answerQuery(p); break;
     case "expense":{
       if(!p.amount){toast("Kitne ka kharcha? Phir bolo","warn");break;}
       Store.applyExpense(p.label,p.amount,"general",p.when||0); scheduleSync(); renderStats(); renderExpenses();
       toast(`${p.label} ₹${inr(p.amount)} darj`); Voice.speak(`${p.amount} rupaye ka kharcha darj ho gaya`);
+      setTimeout(closeSoon,1100);
       break;}
     case "return":{
       Store.applyReturn(p.name,p.name_,p.qty,p.unit,p.when||0); scheduleSync(); renderStats(); renderInv();
       toast(`Return darj — stock wapas aa gaya`); Voice.speak("Samman darj, stock wapas aa gaya");
+      setTimeout(closeSoon,1100);
       break;}
     case "inward":{
       Store.applyInward(p.supplier,p.amount,p.itemName,p.qty,p.unit,p.when||0); scheduleSync(); renderStats(); renderInv();
       toast(`Maal aaya ${p.itemName||""} ×${p.qty} · supplier ko ₹${inr(p.amount)}`);
       Voice.speak(`Stock badh gaya. ${p.supplier?p.supplier:"Supplier"} ko ${p.amount} diye`);
+      setTimeout(closeSoon,1100);
       break;}
     default: toast("Ek baar phir se bolo","warn");
   }
@@ -274,7 +282,7 @@ function renderBill(){
     <div style="background:var(--card);border:1px solid var(--outline-soft);border-radius:var(--r-lg);padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px">
       <div style="min-width:0">
         <div style="font-size:15px;font-weight:600">${esc(it.name)}${it.newSku?' <span class="tag-new">NEW SKU</span>':''}</div>
-        <div style="font-size:12px;color:var(--ink2);margin-top:2px">${it.qty} × ${esc(it.unitLabel||it.unit)} → <b style="color:var(--primary)">${esc(it.stdQty)}</b></div>
+        <div style="font-size:12px;color:var(--ink2);margin-top:2px">${esc(it.unitLabel||it.unit)} → <b style="color:var(--primary)">${esc(it.stdQty)}</b></div>
         <div class="stepper" style="margin-top:6px">
           <button data-qi="${i}" data-d="-1">−</button><span style="min-width:26px;text-align:center;font-weight:700;font-size:13px">${it.qty}</span><button data-qi="${i}" data-d="1">+</button>
         </div>
@@ -324,6 +332,7 @@ function confirmSale(){
   toast(`₹${inr(total)} darj ho gaya ✓`);
   Voice.speak(`${total} rupaye darj ho gaya`);
   $("#micStatus").textContent="READY — AGla BILL BOLO";
+  setTimeout(closeSoon,1100);
   if(txn.limitBreach){
     if(!confirm(`⚠ Credit limit cross for ${txn.customerName} (now ₹${inr(txn.newDue)}). Continue?`)){ 
       // rollback not implemented; just warn
@@ -360,7 +369,7 @@ $("#corrSave").addEventListener("click",()=>{
 });
 
 /* ---------- sheets ---------- */
-function openSheet(id){const s=document.getElementById(id);s.hidden=false;document.body.style.overflow="hidden";const f=s.querySelector("input,button.tbtn");f&&setTimeout(()=>f.focus(),80);if(id==="scanSheet")startScan();if(id==="supSheet")renderSuppliers();}
+function openSheet(id){const s=document.getElementById(id);s.hidden=false;document.body.style.overflow="hidden";const f=s.querySelector("input,button.tbtn");f&&setTimeout(()=>f.focus(),80);if(id==="scanSheet")startScan();if(id==="supSheet")renderSuppliers();if(id==="reportsSheet")renderReports();}
 function closeSheet(id){document.getElementById(id).hidden=true;document.body.style.overflow="";if(id==="scanSheet"){Scan.stop();}}
 $$("[data-close]").forEach(b=>b.addEventListener("click",()=>closeSheet(b.dataset.close)));
 

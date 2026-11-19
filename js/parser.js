@@ -291,7 +291,7 @@
   }
 
   const DEMOS=[
-    "Ramesh ko ek pau chai, 2 packet Maggi — ₹150 me se ₹100 cash ₹50 udhaar",
+    "Ramesh ko ek pau chai, 2 packet Maggi — ₹171 me se ₹100 cash ₹71 udhaar",
     "Sunita ko sawa kilo cheeni, aadha litre tel — pura udhaar",
     "Vijay ko derh kilo atta ₹60 per kilo, ek peti tel",
     "Ramesh ne ₹200 jama kiye",
@@ -299,7 +299,8 @@
     "Aaj kitni bikri hui?",
     "Bijli ka bill ₹800 diya",
     "Fortune distributor ko ₹5000 diye aur 5 peti tel aaya",
-    "Geeta ne 1 packet doodh wapas kiya"
+    "Geeta ne 1 packet doodh wapas kiya",
+    "Nahi, 2 nahi 3 packet Maggi"
   ];
 
   // ---------- async parser (Gnani Evon / Gemini stand-in) ----------
